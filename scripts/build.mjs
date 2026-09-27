@@ -3,7 +3,7 @@
 // colour from the live storage %, then shells out to the map-paper CLI (the submodule)
 // to produce out/idukki.png. All rendering knowledge lives in map-paper; this only
 // orchestrates.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { spawn, execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -16,6 +16,8 @@ const BASE = `http://localhost:${PORT}`;
 
 const cfg = parseYaml(readFileSync(join(ROOT, "styles.yaml"), "utf8"));
 const level = JSON.parse(readFileSync(join(ROOT, "level.json"), "utf8"));
+const weatherPath = join(ROOT, "weather.json");
+const weather = existsSync(weatherPath) ? JSON.parse(readFileSync(weatherPath, "utf8")) : null;
 
 // --- pick style-of-the-day ---
 const dayOfYear = Math.floor(
@@ -80,11 +82,18 @@ async function waitForServer(base, timeoutMs) {
 
 function updateReadme() {
   const readmePath = join(ROOT, "README.md");
-  const readme = readFileSync(readmePath, "utf8");
+  let readme = readFileSync(readmePath, "utf8");
   const caption =
-    `**Idukki reservoir** · ${level.level} ft / ${level.frl} ft · ` +
-    `**${level.percent}%** · ${level.reportDate} · style: \`${style}\``;
-  const block = `<!--LEVEL:START-->\n${caption}\n<!--LEVEL:END-->`;
-  const next = readme.replace(/<!--LEVEL:START-->[\s\S]*?<!--LEVEL:END-->/, block);
-  writeFileSync(readmePath, next);
+    `Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · ` +
+    `Water level: ${level.level} ft / ${level.frl} ft (**${level.percent}%**) · ${level.reportDate}`;
+  readme = readme.replace(
+    /<!--LEVEL:START-->[\s\S]*?<!--LEVEL:END-->/,
+    `<!--LEVEL:START-->\n${caption}\n<!--LEVEL:END-->`,
+  );
+  const wx = weather ? `${weather.label}, ${weather.tempC}°C` : "—";
+  readme = readme.replace(
+    /<!--WEATHER:START-->[\s\S]*?<!--WEATHER:END-->/,
+    `<!--WEATHER:START-->${wx}<!--WEATHER:END-->`,
+  );
+  writeFileSync(readmePath, readme);
 }

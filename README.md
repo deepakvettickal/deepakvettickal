@@ -1,27 +1,18 @@
-<h1 align="center">ദീപക് · Deepak Antony</h1>
-<p align="center"><em>Polyglot programmer. Maps, and the water that fills them.</em></p>
+<h1 align="center">Deepak Antony · ജോർജുകുട്ടി</h1>
 
 <p align="center">
   <img src="out/idukki.png" alt="Idukki reservoir, water level shown by colour" width="100%">
 </p>
 
 <!--LEVEL:START-->
-**Idukki reservoir** · 2367.2 ft / 2403 ft · **61.28%** · 27/09/2026 · style: `dune`
+Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · Water level: 2367.2 ft / 2403 ft (**61.28%**) · 27/09/2026
 <!--LEVEL:END-->
 
 ---
 
-### About this image
+Geographic data snapshot of one of my favourite places, [Idukki Reservoir](https://en.wikipedia.org/wiki/File:Idukki_Reservoir_Pano_Calvary_Mount_Kerala_Mar22_A7C_01220-23_Pano.jpg).
+The image above is an attempt to capture the water level in the reservoir, along with the weather at the location.
 
-This banner is a live portrait of the **Idukki reservoir** in Kerala — the pool held back by the
-Idukki arch dam, Cheruthoni and Kulamavu dams. It re-renders **every day**: the water colour tracks
-the reservoir's real storage level (**deep blue when full, pale when drawn down**), and the map's
-art style rotates through a hand-picked set.
-
-- **Water level data:** [Kerala SDMA — Daily Dam Water Levels](https://sdma.kerala.gov.in/dam-water-level/)
-  (KSEB daily report). Parsed once a day.
-- **Built with [map-paper](https://github.com/deepakvettickal/map-paper)** — my own cartographic
-  poster renderer. Map data © OpenStreetMap contributors; tiles by OpenFreeMap.
-
-<sub>The colour encodes the level; the exact figure is in the caption above. The lake outline is the
-full pool — real drawdown area isn't shown.</sub>
+- **Water level:** [Kerala SDMA — Daily Dam Water Levels](https://sdma.kerala.gov.in/dam-water-level/) (KSEB daily report), extracted daily. The water colour and fill shift with the level — deep blue when full, pale when drawn down. The outline is the full pool, so the real drawdown area isn't shown.
+- **Weather:** <!--WEATHER:START-->Partly cloudy, 22.7°C<!--WEATHER:END--> at the reservoir, from [Open-Meteo](https://open-meteo.com), fetched daily.
+- **Built with [map-paper](https://github.com/deepakvettickal/map-paper)** — my own cartographic poster renderer. Map data © OpenStreetMap contributors; tiles by OpenFreeMap.
