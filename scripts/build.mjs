@@ -58,6 +58,31 @@ console.log(`${ids.length} styles · level=${level.level}ft (${level.percent}%) 
 const outStyles = join(ROOT, "out", "styles");
 mkdirSync(outStyles, { recursive: true });
 const fw = 1100, fh = Math.round((fw * cfg.view.height) / cfg.view.width);
+// One small image per day is archived as a permanent record (survives the weekly
+// history purge); the daily record uses the pencil style at a modest size.
+const archiveDir = join(ROOT, "archive");
+mkdirSync(archiveDir, { recursive: true });
+const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+const aw = 800, ah = Math.round((aw * cfg.view.height) / cfg.view.width);
+const render = (style, w, h, out) =>
+  execFileSync(
+    "node",
+    [
+      "scripts/render-cli.mjs",
+      "--base", BASE,
+      "--style", style,
+      "--lat", String(cfg.view.lat),
+      "--lng", String(cfg.view.lng),
+      "--zoom", String(cfg.view.zoom),
+      "--size", cfg.view.size,
+      "--width", String(w),
+      "--height", String(h),
+      "--water", water,
+      "--waterDots", waterDots,
+      "--out", out,
+    ],
+    { cwd: MAP_PAPER, stdio: "inherit" },
+  );
 const server = spawn("npm", ["run", "dev", "--", "--port", String(PORT), "--strictPort"], {
   cwd: MAP_PAPER,
   stdio: "ignore",
@@ -88,6 +113,8 @@ try {
       { cwd: MAP_PAPER, stdio: "inherit" },
     );
   }
+  console.log("archiving", today);
+  render("pencil", aw, ah, join(archiveDir, `${today}.png`));
 } finally {
   server.kill();
 }
