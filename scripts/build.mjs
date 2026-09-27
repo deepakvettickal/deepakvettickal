@@ -63,7 +63,6 @@ const fw = 1100, fh = Math.round((fw * cfg.view.height) / cfg.view.width);
 const archiveDir = join(ROOT, "archive");
 mkdirSync(archiveDir, { recursive: true });
 const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
-const aw = 800, ah = Math.round((aw * cfg.view.height) / cfg.view.width);
 const render = (style, w, h, out) =>
   execFileSync(
     "node",
@@ -114,7 +113,7 @@ try {
     );
   }
   console.log("archiving", today);
-  render("pencil", aw, ah, join(archiveDir, `${today}.png`));
+  render("pencil", fw, fh, join(archiveDir, `${today}.png`)); // same quality as displayed
 } finally {
   server.kill();
 }
@@ -185,7 +184,7 @@ ${cells}  <g transform="translate(${mx},0)">
     <rect x="-2" y="${barY}" width="4" height="${barH}" fill="#ffffff"/>
     <rect x="-2" y="${barY}" width="4" height="${barH}" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1"/>
     <text x="0" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12" font-weight="600" fill="#57606a">${level.level} ft</text>
-    <text x="0" y="${barY + barH + 30}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#8a8f98">${level.percent}%</text>
+    <text x="0" y="${barY + barH + 30}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#8a8f98">${level.percent}% capacity</text>
   </g>
 ${labels}
 </svg>
