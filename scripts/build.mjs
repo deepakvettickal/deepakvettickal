@@ -3,7 +3,7 @@
 // colour from the live storage %, then shells out to the map-paper CLI (the submodule)
 // to produce out/idukki.png. All rendering knowledge lives in map-paper; this only
 // orchestrates.
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { spawn, execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -20,11 +20,9 @@ const level = JSON.parse(readFileSync(join(ROOT, "level.json"), "utf8"));
 const weatherPath = join(ROOT, "weather.json");
 const weather = existsSync(weatherPath) ? JSON.parse(readFileSync(weatherPath, "utf8")) : null;
 
-// --- pick style-of-the-day ---
-const dayOfYear = Math.floor(
-  (Date.now() - Date.UTC(new Date().getUTCFullYear(), 0, 0)) / 86400000,
-);
-const style = cfg.rotation[dayOfYear % cfg.rotation.length];
+// --- all rotation styles are rendered; the hourly job picks which one shows ---
+const styles = cfg.rotation;
+const current = styles[Math.floor(Date.now() / 3600000) % styles.length];
 
 // --- colour helpers ---
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
@@ -47,43 +45,50 @@ function colourForLevel(lvl) {
 const water = colourForLevel(level.level);
 const waterDots = mix(water, "#000000", 0.28); // slightly darker pattern dots
 
-console.log(`style=${style} level=${level.level}ft (${level.percent}%) water=${water}`);
+console.log(`styles=${styles.join(",")} level=${level.level}ft (${level.percent}%) water=${water}`);
 
-// --- start the map-paper dev server, render, then stop it ---
+// --- start the map-paper dev server, render every style, then stop it ---
+const outStyles = join(ROOT, "out", "styles");
+mkdirSync(outStyles, { recursive: true });
+const fw = 1100, fh = Math.round((fw * cfg.view.height) / cfg.view.width);
 const server = spawn("npm", ["run", "dev", "--", "--port", String(PORT), "--strictPort"], {
   cwd: MAP_PAPER,
   stdio: "ignore",
 });
 try {
   await waitForServer(BASE, 60000);
-  execFileSync(
-    "node",
-    [
-      "scripts/render-cli.mjs",
-      "--base", BASE,
-      "--style", style,
-      "--lat", String(cfg.view.lat),
-      "--lng", String(cfg.view.lng),
-      "--zoom", String(cfg.view.zoom),
-      "--size", cfg.view.size,
-      "--width", String(cfg.view.width),
-      "--height", String(cfg.view.height),
-      "--water", water,
-      "--waterDots", waterDots,
-      "--border", "deco",
-      "--borderScale", "0.1",
-      "--out", join(ROOT, "out", "idukki.png"),
-    ],
-    { cwd: MAP_PAPER, stdio: "inherit" },
-  );
+  for (const id of styles) {
+    console.log("rendering", id);
+    execFileSync(
+      "node",
+      [
+        "scripts/render-cli.mjs",
+        "--base", BASE,
+        "--style", id,
+        "--lat", String(cfg.view.lat),
+        "--lng", String(cfg.view.lng),
+        "--zoom", String(cfg.view.zoom),
+        "--size", cfg.view.size,
+        "--width", String(fw),
+        "--height", String(fh),
+        "--water", water,
+        "--waterDots", waterDots,
+        "--out", join(outStyles, `${id}.png`),
+      ],
+      { cwd: MAP_PAPER, stdio: "inherit" },
+    );
+  }
 } finally {
   server.kill();
 }
+// The ordered style list the hourly rotate job reads (no YAML/npm needed there).
+writeFileSync(join(outStyles, "index.json"), JSON.stringify(styles) + "\n");
 
-// --- write the level scale bar, then refresh the README ---
+// --- point the README at the current style, write the level bar, refresh text ---
+setPoster(current);
 writeLevelBar();
 updateReadme();
-console.log("done: out/idukki.png + level-bar.svg + README updated");
+console.log(`done: ${styles.length} styles + level-bar.svg + README (showing ${current})`);
 
 async function waitForServer(base, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
@@ -149,6 +154,17 @@ ${labels}
 </svg>
 `;
   writeFileSync(join(ROOT, "out", "level-bar.svg"), svg);
+}
+
+// Point the README poster <img> at a given style (same swap the rotate job does).
+function setPoster(id) {
+  const readmePath = join(ROOT, "README.md");
+  const readme = readFileSync(readmePath, "utf8");
+  const img = `<img src="out/styles/${id}.png" alt="Idukki reservoir, water level shown by colour" width="100%">`;
+  writeFileSync(
+    readmePath,
+    readme.replace(/<!--POSTER:START-->[\s\S]*?<!--POSTER:END-->/, `<!--POSTER:START-->${img}<!--POSTER:END-->`),
+  );
 }
 
 function updateReadme() {
