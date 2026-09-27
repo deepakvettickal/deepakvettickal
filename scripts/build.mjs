@@ -70,6 +70,7 @@ try {
       "--height", String(cfg.view.height),
       "--water", water,
       "--waterDots", waterDots,
+      "--border",
       "--out", join(ROOT, "out", "idukki.png"),
     ],
     { cwd: MAP_PAPER, stdio: "inherit" },
@@ -102,7 +103,7 @@ async function waitForServer(base, timeoutMs) {
 function writeLevelBar() {
   const s = cfg.water_scale;
   const a = level.alerts ?? {};
-  const W = 1000, H = 58, barY = 0, barH = 22, N = 50, gap = 2;
+  const W = 1000, H = 58, barY = 0, barH = 22, N = 50, gap = 0.8;
   // Zone widths as fractions of the bar: normal is the widest.
   const NORMAL = 0.52, ALERT = (1 - NORMAL) / 3; // 0.16 each
   const bounds = { blue: NORMAL, orange: NORMAL + ALERT, red: NORMAL + 2 * ALERT };
@@ -138,9 +139,9 @@ function writeLevelBar() {
   ].join("\n");
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Water level ${level.level} ft, ${level.percent}%">
 ${cells}  <g transform="translate(${mx},0)">
-    <rect x="-1.5" y="${barY - 3}" width="3" height="${barH + 6}" fill="#111418"/>
-    <path d="M0 ${barY - 3} L-5 ${barY - 11} L5 ${barY - 11} Z" fill="#111418"/>
-    <text x="0" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12" font-weight="700" fill="#3a4048">${level.level} ft</text>
+    <rect x="-2" y="${barY}" width="4" height="${barH}" fill="#ffffff"/>
+    <rect x="-2" y="${barY}" width="4" height="${barH}" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1"/>
+    <text x="0" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12" font-weight="600" fill="#57606a">${level.level} ft</text>
     <text x="0" y="${barY + barH + 30}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#8a8f98">${level.percent}%</text>
   </g>
 ${labels}
@@ -158,10 +159,10 @@ function updateReadme() {
   const caption =
     `Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · ` +
     `Water level: \`${level.level} ft\` / \`${level.frl} ft\` (${level.percent}%)${remarks} · ` +
-    `Last updated: ${stamp || "—"}`;
+    `Last updated: ${stamp || "unknown"}`;
   readme = replaceBlock(readme, "LEVEL", caption);
 
-  const wx = weather ? `${weather.label}, ${weather.tempC}°C` : "—";
+  const wx = weather ? `${weather.label}, ${weather.tempC}°C` : "unavailable";
   readme = readme.replace(
     /<!--WEATHER:START-->[\s\S]*?<!--WEATHER:END-->/,
     `<!--WEATHER:START-->${wx}<!--WEATHER:END-->`,
