@@ -181,7 +181,7 @@ function writeLevelBar() {
 ${cells}  <g transform="translate(${mx},0)">
     <rect x="-2" y="${barY}" width="4" height="${barH}" fill="#ffffff"/>
     <rect x="-2" y="${barY}" width="4" height="${barH}" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1"/>
-    <text x="0" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12" font-weight="600" fill="#3a4048">${level.level} ft</text>
+    <text x="0" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12" font-weight="600" fill="#8a8f98">${level.level} ft</text>
     <text x="0" y="${barY + barH + 30}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#8a8f98">${level.percent}% capacity</text>
   </g>
 ${legend}
