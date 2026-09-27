@@ -10,13 +10,16 @@ view:
   width: 1920
   height: 1040
 
-# Water colour ramp, interpolated by the reservoir's live storage % (0..100).
-# Bright azure when full, light sky-blue when drawn down.
-water_ramp:
-  full: "#0a6fd0"      # at/near FRL — vivid azure
-  low: "#bfe0f7"       # near empty — light sky
-  dots_full: "#0857a8" # water-pattern dots when full
-  dots_low: "#dceffb"  # water-pattern dots when low
+# Water colour scale keyed to the KSEB alert levels (from the daily report).
+# Below the Blue threshold the water reads light→blue (normal operating range);
+# once the level crosses Blue / Orange / Red it takes that alert's colour. The map
+# water and the scale bar under the image both use this.
+water_scale:
+  floor_ft: 2300     # low reference for the scale (below normal operating range)
+  low: "#cfe8fb"     # light blue, at the floor
+  blue: "#2f6fe0"    # Blue alert colour
+  orange: "#ef8a17"  # Orange alert colour
+  red: "#e23b3b"     # Red alert colour
 
 # Style-of-the-day: cycles through this list (index = day-of-year % length).
 # Curated for a soft, aesthetic look with the bright-blue reservoir.
@@ -24,5 +27,7 @@ rotation:
   - watercolor    # painterly green wash
   - sakura        # pink paper — distinctive, soft
   - ukiyo-e       # Japanese woodblock, gentle
+  - pencil        # hand-drawn topo sketch
   - nordic        # clean, minimal, pale
+  - solarpunk     # lush green
   - pastel        # soft muted tones
