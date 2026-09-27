@@ -13,5 +13,5 @@ Geographic data snapshot of one of my favourite places, [Idukki Reservoir](https
 The image above shows the current water level in the reservoir, together with the weather at the location.
 
 - **Water level:** [Kerala SDMA · Daily Dam Water Levels](https://sdma.kerala.gov.in/dam-water-level/) (KSEB daily report), extracted daily. The water's colour is keyed to the official alert levels: light → blue → orange → red.
-- **Weather:** <!--WEATHER:START-->Overcast, 20.3°C<!--WEATHER:END--> at the reservoir, from [Open-Meteo](https://open-meteo.com).
+- **Weather:** <!--WEATHER:START-->Overcast, 20.2°C<!--WEATHER:END--> at the reservoir, from [Open-Meteo](https://open-meteo.com).
 - **Built with [map-paper](https://github.com/deepakvettickal/map-paper).** Map data © OpenStreetMap contributors; tiles by OpenFreeMap.
