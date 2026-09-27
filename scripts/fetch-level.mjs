@@ -40,19 +40,28 @@ function parseIdukki(text) {
   // The Idukki data row is the line carrying FRL 2403.00 ft.
   const row = lines.find((l) => /2403\.00\s*ft/.test(l));
   if (!row) throw new Error("Idukki row not found in PDF text");
-  const ftVals = [...row.matchAll(/([\d.]+)\s*ft/g)].map((m) => Number(m[1]));
   const pctMatch = row.match(/([\d.]+)\s*%/);
-  if (ftVals.length < 2 || !pctMatch) throw new Error(`unexpected Idukki row: ${row.trim()}`);
-  const dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})/);
-  const [frl, level, rule] = ftVals;
+  if (!pctMatch) throw new Error(`unexpected Idukki row: ${row.trim()}`);
+  // All numeric tokens in column order: [serial, FRL, level, rule, blue, orange,
+  // red, capacity, liveStorage, percent]. Idukki fills every column, and we anchor
+  // on the FRL=2403 row, so positional mapping is safe here.
+  const nums = (row.match(/[\d.]+/g) ?? []).map(Number);
+  const [, frl, level, rule, blue, orange, red] = nums;
+  // Remarks: whatever trails the percentage. "-" or blank means none.
+  const remarksRaw = row.slice(row.indexOf(pctMatch[0]) + pctMatch[0].length).trim();
+  const remarks = /^[-–—\s]*$/.test(remarksRaw) ? null : remarksRaw;
+  const stamp = text.match(/(\d{2}\/\d{2}\/\d{4})\s*-?\s*([\d.]+\s*(?:AM|PM))/i);
   return {
     reservoir: "Idukki",
     unit: "ft",
     frl,
     level,
     rule: rule ?? null,
+    alerts: { blue: blue ?? null, orange: orange ?? null, red: red ?? null },
     percent: Number(pctMatch[1]),
-    reportDate: dateMatch ? dateMatch[1] : null,
+    remarks,
+    reportDate: stamp ? stamp[1] : (text.match(/(\d{2}\/\d{2}\/\d{4})/)?.[1] ?? null),
+    reportTime: stamp ? stamp[2].replace(/\./g, ":").toUpperCase().replace(/\s+/g, " ") : null,
     fetchedAt: new Date().toISOString(),
   };
 }

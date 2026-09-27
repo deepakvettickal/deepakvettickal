@@ -64,9 +64,10 @@ try {
   server.kill();
 }
 
-// --- refresh the README caption between markers ---
+// --- write the level colour-scale bar and refresh the README ---
+writeLevelBar(water);
 updateReadme();
-console.log("done: out/idukki.png + README updated");
+console.log("done: out/idukki.png + level-bar.svg + README updated");
 
 async function waitForServer(base, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
@@ -80,20 +81,60 @@ async function waitForServer(base, timeoutMs) {
   throw new Error("dev server did not start in time");
 }
 
+// A horizontal pale→deep colour scale with a marker at the current level %.
+// SVG so it stays crisp and tiny; GitHub serves it as an image.
+function writeLevelBar(currentColour) {
+  const W = 1000, H = 76, pad = 2, barH = 26, barY = 30;
+  const x = pad + (W - 2 * pad) * Math.max(0, Math.min(1, level.percent / 100));
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Water level ${level.percent}%">
+  <defs>
+    <linearGradient id="ramp" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${cfg.water_ramp.low}"/>
+      <stop offset="1" stop-color="${cfg.water_ramp.full}"/>
+    </linearGradient>
+  </defs>
+  <rect x="${pad}" y="${barY}" width="${W - 2 * pad}" height="${barH}" rx="${barH / 2}" fill="url(#ramp)"/>
+  <text x="${pad}" y="18" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" fill="#8a8f98">empty</text>
+  <text x="${W - pad}" y="18" text-anchor="end" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" fill="#8a8f98">full</text>
+  <g transform="translate(${x.toFixed(1)},0)">
+    <path d="M0 ${barY - 3} L-6 ${barY - 12} L6 ${barY - 12} Z" fill="#24292f"/>
+    <rect x="-1.5" y="${barY}" width="3" height="${barH}" fill="#24292f" opacity="0.55"/>
+    <circle cx="0" cy="${barY + barH + 8}" r="0" />
+    <text x="0" y="${H - 6}" text-anchor="middle" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="${currentColour}">${level.percent}%</text>
+  </g>
+</svg>
+`;
+  writeFileSync(join(ROOT, "out", "level-bar.svg"), svg);
+}
+
 function updateReadme() {
   const readmePath = join(ROOT, "README.md");
   let readme = readFileSync(readmePath, "utf8");
+
+  const remarks = level.remarks ? ` · Remarks: ${level.remarks}` : "";
+  const stamp = [level.reportDate, level.reportTime].filter(Boolean).join(" ");
   const caption =
     `Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · ` +
-    `Water level: ${level.level} ft / ${level.frl} ft (**${level.percent}%**) · ${level.reportDate}`;
-  readme = readme.replace(
-    /<!--LEVEL:START-->[\s\S]*?<!--LEVEL:END-->/,
-    `<!--LEVEL:START-->\n${caption}\n<!--LEVEL:END-->`,
-  );
+    `Water level: \`${level.level} ft\` / \`${level.frl} ft\` (${level.percent}%)${remarks} · ` +
+    `Last updated: ${stamp || "—"}`;
+  readme = replaceBlock(readme, "LEVEL", caption);
+
+  const a = level.alerts ?? {};
+  const alerts =
+    `Alert levels: 🔵 \`${a.blue ?? "—"} ft\` · 🟠 \`${a.orange ?? "—"} ft\` · 🔴 \`${a.red ?? "—"} ft\``;
+  readme = replaceBlock(readme, "ALERTS", alerts);
+
   const wx = weather ? `${weather.label}, ${weather.tempC}°C` : "—";
   readme = readme.replace(
     /<!--WEATHER:START-->[\s\S]*?<!--WEATHER:END-->/,
     `<!--WEATHER:START-->${wx}<!--WEATHER:END-->`,
   );
   writeFileSync(readmePath, readme);
+}
+
+function replaceBlock(text, name, body) {
+  return text.replace(
+    new RegExp(`<!--${name}:START-->[\\s\\S]*?<!--${name}:END-->`),
+    `<!--${name}:START-->\n${body}\n<!--${name}:END-->`,
+  );
 }

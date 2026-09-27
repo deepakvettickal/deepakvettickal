@@ -3,7 +3,7 @@
 
 # Where and how the reservoir is framed (same every day).
 view:
-  lat: 9.79
+  lat: 9.77
   lng: 76.945
   zoom: 11.05
   size: desktop
