@@ -1,0 +1,29 @@
+# Configuration for the daily Idukki reservoir poster.
+# Human-editable source of truth. Edit freely; the daily job reads this.
+
+# Where and how the reservoir is framed (same every day).
+view:
+  lat: 9.81
+  lng: 76.98
+  zoom: 11.5
+  size: desktop
+  width: 1920
+  height: 1040
+
+# Water colour ramp, interpolated by the reservoir's live storage % (0..100).
+# Deep saturated blue when full, pale washed blue when drawn down.
+water_ramp:
+  full: "#14506e"      # at/near FRL
+  low: "#b4cdd8"       # near empty
+  dots_full: "#0a2e42" # water-pattern dots when full
+  dots_low: "#d6e5eb"  # water-pattern dots when low
+
+# Style-of-the-day: cycles through this list (index = day-of-year % length).
+# Each was screened to show the water level clearly at both high and low.
+rotation:
+  - dune          # tan / olive — highest water contrast
+  - 8-bit         # punchy pixel-art green
+  - sakura        # pink paper — most distinctive
+  - ukiyo-e       # soft Japanese woodblock
+  - auburn        # warm brown, elegant
+  - watercolor    # painterly wash
