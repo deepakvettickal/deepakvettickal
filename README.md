@@ -10,7 +10,7 @@ Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · Water 
 ---
 
 Geographic data snapshot of one of my favourite places, [Idukki Reservoir](https://en.wikipedia.org/wiki/File:Idukki_Reservoir_Pano_Calvary_Mount_Kerala_Mar22_A7C_01220-23_Pano.jpg).
-The image above shows the current water level in the reservoir, together with the weather at the location.
+The image above shows the current water level in the reservoir.
 
 - **Water level:** [Kerala SDMA · Daily Dam Water Levels](https://sdma.kerala.gov.in/dam-water-level/) (KSEB daily report), extracted daily. The water's colour is keyed to the official alert levels: light → blue → orange → red. The scale under the map marks today's level from empty to full; the marker shows the water's height, and the % is its capacity (volume).
 - **Weather:** <!--WEATHER:START-->Overcast, 20.3°C<!--WEATHER:END--> at the reservoir, from [Open-Meteo](https://open-meteo.com).
