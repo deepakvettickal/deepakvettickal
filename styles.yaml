@@ -21,13 +21,30 @@ water_scale:
   orange: "#ef8a17"  # Orange alert colour
   red: "#e23b3b"     # Red alert colour
 
-# Style-of-the-day: cycles through this list (index = day-of-year % length).
-# Curated for a soft, aesthetic look with the bright-blue reservoir.
+# Styles cycled through (the hourly job picks one). An entry is either a style id
+# string, or an object { id, style, hue, chroma, lighten } for an OKLCH palette
+# variant of a base style (id names the output file).
 rotation:
-  - watercolor    # painterly green wash
-  - sakura        # pink paper — distinctive, soft
-  - ukiyo-e       # Japanese woodblock, gentle
-  - pencil        # hand-drawn topo sketch
-  - nordic        # clean, minimal, pale
-  - solarpunk     # lush green
-  - pastel        # soft muted tones
+  # soft originals
+  - watercolor
+  - sakura
+  - ukiyo-e
+  - pencil
+  - nordic
+  - solarpunk
+  - pastel
+  # distinct stock styles
+  - auburn
+  - linocut
+  - toner
+  - blueprint
+  - soviet-topo
+  - sanborn
+  - brutalist
+  - ordnance
+  # OKLCH palette-shift variants (the "randomise" picks)
+  - { id: watercolor-lime,    style: watercolor, hue: 90,  chroma: 1.2 }
+  - { id: watercolor-aqua,    style: watercolor, hue: 200, chroma: 1.1 }
+  - { id: sakura-mint,        style: sakura,     hue: 140 }
+  - { id: auburn-teal,        style: auburn,     hue: 120, chroma: 1.2 }
+  - { id: ordnance-lavender,  style: ordnance,   hue: 210, chroma: 1.3, lighten: 0.02 }

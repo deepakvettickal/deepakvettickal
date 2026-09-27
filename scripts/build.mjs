@@ -21,8 +21,15 @@ const weatherPath = join(ROOT, "weather.json");
 const weather = existsSync(weatherPath) ? JSON.parse(readFileSync(weatherPath, "utf8")) : null;
 
 // --- all rotation styles are rendered; the hourly job picks which one shows ---
-const styles = cfg.rotation;
-const current = styles[Math.floor(Date.now() / 3600000) % styles.length];
+// Normalise each entry to { id, style, hue, chroma, lighten }. A bare string is a
+// plain style; an object is an OKLCH palette variant of a base style.
+const rotation = cfg.rotation.map((e) =>
+  typeof e === "string"
+    ? { id: e, style: e, hue: 0, chroma: 1, lighten: 0 }
+    : { id: e.id, style: e.style, hue: e.hue ?? 0, chroma: e.chroma ?? 1, lighten: e.lighten ?? 0 },
+);
+const ids = rotation.map((r) => r.id);
+const current = ids[Math.floor(Date.now() / 3600000) % ids.length];
 
 // --- colour helpers ---
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
@@ -45,7 +52,7 @@ function colourForLevel(lvl) {
 const water = colourForLevel(level.level);
 const waterDots = mix(water, "#000000", 0.28); // slightly darker pattern dots
 
-console.log(`styles=${styles.join(",")} level=${level.level}ft (${level.percent}%) water=${water}`);
+console.log(`${ids.length} styles · level=${level.level}ft (${level.percent}%) water=${water}`);
 
 // --- start the map-paper dev server, render every style, then stop it ---
 const outStyles = join(ROOT, "out", "styles");
@@ -57,14 +64,14 @@ const server = spawn("npm", ["run", "dev", "--", "--port", String(PORT), "--stri
 });
 try {
   await waitForServer(BASE, 60000);
-  for (const id of styles) {
-    console.log("rendering", id);
+  for (const r of rotation) {
+    console.log("rendering", r.id);
     execFileSync(
       "node",
       [
         "scripts/render-cli.mjs",
         "--base", BASE,
-        "--style", id,
+        "--style", r.style,
         "--lat", String(cfg.view.lat),
         "--lng", String(cfg.view.lng),
         "--zoom", String(cfg.view.zoom),
@@ -73,7 +80,10 @@ try {
         "--height", String(fh),
         "--water", water,
         "--waterDots", waterDots,
-        "--out", join(outStyles, `${id}.png`),
+        "--hueShift", String(r.hue),
+        "--chroma", String(r.chroma),
+        "--lighten", String(r.lighten),
+        "--out", join(outStyles, `${r.id}.png`),
       ],
       { cwd: MAP_PAPER, stdio: "inherit" },
     );
@@ -81,14 +91,14 @@ try {
 } finally {
   server.kill();
 }
-// The ordered style list the hourly rotate job reads (no YAML/npm needed there).
-writeFileSync(join(outStyles, "index.json"), JSON.stringify(styles) + "\n");
+// The ordered id list the hourly rotate job reads (no YAML/npm needed there).
+writeFileSync(join(outStyles, "index.json"), JSON.stringify(ids) + "\n");
 
 // --- point the README at the current style, write the level bar, refresh text ---
 setPoster(current);
 writeLevelBar();
 updateReadme();
-console.log(`done: ${styles.length} styles + level-bar.svg + README (showing ${current})`);
+console.log(`done: ${ids.length} styles + level-bar.svg + README (showing ${current})`);
 
 async function waitForServer(base, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
