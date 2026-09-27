@@ -138,55 +138,53 @@ async function waitForServer(base, timeoutMs) {
   throw new Error("dev server did not start in time");
 }
 
-// A blocky colour scale for the reservoir level. Most of the bar is the normal
-// range (light→blue); the top is split into the Blue / Orange / Red alert zones,
-// each a solid alert colour and labelled. A marker sits at the current level, and
-// the map water uses the same colour — so the water itself reads the alert status.
+// A colour scale for the reservoir, drawn on a real water-LEVEL axis (feet) from an
+// empty reference up to full (FRL). The marker sits at today's true height, and the
+// Blue / Orange / Red alert thresholds sit at their real positions — near full, so
+// they cluster at the right and are named in a compact legend. The map water uses the
+// colour at the marker, so the water itself reads the alert status.
 function writeLevelBar() {
   const s = cfg.water_scale;
   const a = level.alerts ?? {};
-  const W = 1000, H = 58, barY = 0, barH = 22, N = 50, gap = 0.8;
-  // Zone widths as fractions of the bar: normal is the widest.
-  const NORMAL = 0.52, ALERT = (1 - NORMAL) / 3; // 0.16 each
-  const bounds = { blue: NORMAL, orange: NORMAL + ALERT, red: NORMAL + 2 * ALERT };
+  const W = 1000, H = 72, barY = 0, barH = 22, N = 120, gap = 0.8;
+  const floor = s.floor_ft, frl = level.frl;
+  const pos = (ft) => clamp01((ft - floor) / (frl - floor)); // 0 = empty ref, 1 = FRL
+  const blueP = a.blue != null ? pos(a.blue) : 1;
+  const orangeP = a.orange != null ? pos(a.orange) : 1;
+  const redP = a.red != null ? pos(a.red) : 1;
   const colourAt = (p) => {
-    if (p < bounds.blue) return mix(s.low, s.blue, p / bounds.blue);
-    if (p < bounds.orange) return s.blue;
-    if (p < bounds.red) return s.orange;
+    if (p < blueP) return mix(s.low, s.blue, p / blueP);
+    if (p < orangeP) return s.blue;
+    if (p < redP) return s.orange;
     return s.red;
   };
-  // Blocks.
   const cellW = W / N;
   let cells = "";
   for (let i = 0; i < N; i++) {
     const p = (i + 0.5) / N;
-    cells += `  <rect x="${(i * cellW).toFixed(1)}" y="${barY}" width="${(cellW - gap).toFixed(1)}" height="${barH}" fill="${colourAt(p)}"/>\n`;
+    cells += `  <rect x="${(i * cellW).toFixed(1)}" y="${barY}" width="${(cellW - gap).toFixed(2)}" height="${barH}" fill="${colourAt(p)}"/>\n`;
   }
-  // Current-level position on the same zoned axis.
-  const seg = (lvl) => {
-    if (a.blue != null && lvl < a.blue) return NORMAL * clamp01((lvl - s.floor_ft) / (a.blue - s.floor_ft));
-    if (a.orange != null && lvl < a.orange) return NORMAL + ALERT * clamp01((lvl - a.blue) / (a.orange - a.blue));
-    if (a.red != null && lvl < a.red) return bounds.blue + ALERT * clamp01((lvl - a.orange) / (a.red - a.orange));
-    return bounds.orange + ALERT * clamp01((lvl - a.red) / (level.frl - a.red));
-  };
-  const mx = (W * seg(level.level)).toFixed(1);
-  // Alert labels centred under each alert zone.
-  const label = (name, colour, ft, mid) =>
-    `  <text x="${(W * mid).toFixed(1)}" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12.5" font-weight="600" fill="${colour}">${name}</text>
-  <text x="${(W * mid).toFixed(1)}" y="${barY + barH + 30}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#8a8f98">${ft ?? "—"} ft</text>`;
-  const labels = [
-    a.blue != null ? label("Blue alert", s.blue, a.blue, NORMAL + ALERT / 2) : "",
-    a.orange != null ? label("Orange alert", s.orange, a.orange, NORMAL + ALERT * 1.5) : "",
-    a.red != null ? label("Red alert", s.red, a.red, NORMAL + ALERT * 2.5) : "",
-  ].join("\n");
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Water level ${level.level} ft, ${level.percent}%">
+  const mx = (W * pos(level.level)).toFixed(1);
+  // Alert thresholds cluster near full, so name them in a stacked legend at the right.
+  const legend = [
+    ["Blue", s.blue, a.blue],
+    ["Orange", s.orange, a.orange],
+    ["Red", s.red, a.red],
+  ]
+    .filter(([, , v]) => v != null)
+    .map(
+      ([name, colour, v], i) =>
+        `  <text x="${W}" y="${barY + barH + 14 + i * 14}" text-anchor="end" font-family="${FONT}" font-size="11"><tspan fill="${colour}" font-weight="600">${name} alert</tspan><tspan fill="#8a8f98"> ${v} ft</tspan></text>`,
+    )
+    .join("\n");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Water level ${level.level} ft, ${level.percent}% capacity">
 ${cells}  <g transform="translate(${mx},0)">
     <rect x="-2" y="${barY}" width="4" height="${barH}" fill="#ffffff"/>
     <rect x="-2" y="${barY}" width="4" height="${barH}" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1"/>
-    <text x="0" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12" font-weight="600" fill="#57606a">${level.level} ft</text>
+    <text x="0" y="${barY + barH + 15}" text-anchor="middle" font-family="${FONT}" font-size="12" font-weight="600" fill="#3a4048">${level.level} ft</text>
     <text x="0" y="${barY + barH + 30}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#8a8f98">${level.percent}% capacity</text>
   </g>
-${labels}
+${legend}
 </svg>
 `;
   writeFileSync(join(ROOT, "out", "level-bar.svg"), svg);
