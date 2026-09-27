@@ -3,27 +3,26 @@
 
 # Where and how the reservoir is framed (same every day).
 view:
-  lat: 9.77
-  lng: 76.945
-  zoom: 11.05
+  lat: 9.7785
+  lng: 76.9782
+  zoom: 11.4
   size: desktop
   width: 1920
   height: 1040
 
 # Water colour ramp, interpolated by the reservoir's live storage % (0..100).
-# Deep saturated blue when full, pale washed blue when drawn down.
+# Bright azure when full, light sky-blue when drawn down.
 water_ramp:
-  full: "#14506e"      # at/near FRL
-  low: "#b4cdd8"       # near empty
-  dots_full: "#0a2e42" # water-pattern dots when full
-  dots_low: "#d6e5eb"  # water-pattern dots when low
+  full: "#0a6fd0"      # at/near FRL — vivid azure
+  low: "#bfe0f7"       # near empty — light sky
+  dots_full: "#0857a8" # water-pattern dots when full
+  dots_low: "#dceffb"  # water-pattern dots when low
 
 # Style-of-the-day: cycles through this list (index = day-of-year % length).
-# Each was screened to show the water level clearly at both high and low.
+# Curated for a soft, aesthetic look with the bright-blue reservoir.
 rotation:
-  - dune          # tan / olive — highest water contrast
-  - 8-bit         # punchy pixel-art green
-  - sakura        # pink paper — most distinctive
-  - ukiyo-e       # soft Japanese woodblock
-  - auburn        # warm brown, elegant
-  - watercolor    # painterly wash
+  - watercolor    # painterly green wash
+  - sakura        # pink paper — distinctive, soft
+  - ukiyo-e       # Japanese woodblock, gentle
+  - nordic        # clean, minimal, pale
+  - pastel        # soft muted tones

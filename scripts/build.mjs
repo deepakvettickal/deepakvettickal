@@ -13,6 +13,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MAP_PAPER = join(ROOT, "map-paper");
 const PORT = 5199;
 const BASE = `http://localhost:${PORT}`;
+const FONT = "system-ui,Segoe UI,Helvetica,Arial,sans-serif";
 
 const cfg = parseYaml(readFileSync(join(ROOT, "styles.yaml"), "utf8"));
 const level = JSON.parse(readFileSync(join(ROOT, "level.json"), "utf8"));
@@ -64,10 +65,11 @@ try {
   server.kill();
 }
 
-// --- write the level colour-scale bar and refresh the README ---
-writeLevelBar(water);
+// --- write the level bar + alert legend, then refresh the README ---
+writeLevelBar();
+writeAlertsBar();
 updateReadme();
-console.log("done: out/idukki.png + level-bar.svg + README updated");
+console.log("done: out/idukki.png + level-bar.svg + alerts.svg + README updated");
 
 async function waitForServer(base, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
@@ -81,11 +83,11 @@ async function waitForServer(base, timeoutMs) {
   throw new Error("dev server did not start in time");
 }
 
-// A horizontal pale→deep colour scale with a marker at the current level %.
-// SVG so it stays crisp and tiny; GitHub serves it as an image.
-function writeLevelBar(currentColour) {
-  const W = 1000, H = 76, pad = 2, barH = 26, barY = 30;
-  const x = pad + (W - 2 * pad) * Math.max(0, Math.min(1, level.percent / 100));
+// A full-width rectangular colour scale (low→full) with a subtle marker + % at
+// the current level. SVG so it stays crisp and tiny; GitHub serves it as an image.
+function writeLevelBar() {
+  const W = 1000, H = 40, barY = 0, barH = 22;
+  const x = W * Math.max(0, Math.min(1, level.percent / 100));
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Water level ${level.percent}%">
   <defs>
     <linearGradient id="ramp" x1="0" y1="0" x2="1" y2="0">
@@ -93,18 +95,37 @@ function writeLevelBar(currentColour) {
       <stop offset="1" stop-color="${cfg.water_ramp.full}"/>
     </linearGradient>
   </defs>
-  <rect x="${pad}" y="${barY}" width="${W - 2 * pad}" height="${barH}" rx="${barH / 2}" fill="url(#ramp)"/>
-  <text x="${pad}" y="18" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" fill="#8a8f98">empty</text>
-  <text x="${W - pad}" y="18" text-anchor="end" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" fill="#8a8f98">full</text>
+  <rect x="0" y="${barY}" width="${W}" height="${barH}" fill="url(#ramp)"/>
   <g transform="translate(${x.toFixed(1)},0)">
-    <path d="M0 ${barY - 3} L-6 ${barY - 12} L6 ${barY - 12} Z" fill="#24292f"/>
-    <rect x="-1.5" y="${barY}" width="3" height="${barH}" fill="#24292f" opacity="0.55"/>
-    <circle cx="0" cy="${barY + barH + 8}" r="0" />
-    <text x="0" y="${H - 6}" text-anchor="middle" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="${currentColour}">${level.percent}%</text>
+    <rect x="-1" y="${barY}" width="2" height="${barH}" fill="#ffffff" opacity="0.9"/>
+    <text x="0" y="${H - 4}" text-anchor="middle" font-family="${FONT}" font-size="12" fill="#8a8f98">${level.percent}<tspan font-size="9" fill="#b0b4ba">%</tspan></text>
   </g>
 </svg>
 `;
   writeFileSync(join(ROOT, "out", "level-bar.svg"), svg);
+}
+
+// Alert thresholds as small coloured dashes with their level values.
+function writeAlertsBar() {
+  const a = level.alerts ?? {};
+  const items = [
+    ["#2f81f7", "Blue", a.blue],
+    ["#e8901b", "Orange", a.orange],
+    ["#e5484d", "Red", a.red],
+  ].filter(([, , v]) => v != null);
+  const W = 1000, H = 26, colW = W / 3;
+  const cells = items
+    .map(([col, name, v], i) => {
+      const x = i * colW + 2;
+      return `  <rect x="${x}" y="10" width="26" height="4" rx="2" fill="${col}"/>
+  <text x="${x + 34}" y="17" font-family="${FONT}" font-size="14" fill="#57606a"><tspan fill="${col}" font-weight="600">${name}</tspan> ${v} ft</text>`;
+    })
+    .join("\n");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Alert levels">
+${cells}
+</svg>
+`;
+  writeFileSync(join(ROOT, "out", "alerts.svg"), svg);
 }
 
 function updateReadme() {
@@ -118,11 +139,6 @@ function updateReadme() {
     `Water level: \`${level.level} ft\` / \`${level.frl} ft\` (${level.percent}%)${remarks} · ` +
     `Last updated: ${stamp || "—"}`;
   readme = replaceBlock(readme, "LEVEL", caption);
-
-  const a = level.alerts ?? {};
-  const alerts =
-    `Alert levels: 🔵 \`${a.blue ?? "—"} ft\` · 🟠 \`${a.orange ?? "—"} ft\` · 🔴 \`${a.red ?? "—"} ft\``;
-  readme = replaceBlock(readme, "ALERTS", alerts);
 
   const wx = weather ? `${weather.label}, ${weather.tempC}°C` : "—";
   readme = readme.replace(

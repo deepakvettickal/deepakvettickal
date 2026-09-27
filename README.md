@@ -1,20 +1,17 @@
 <h1 align="center">Deepak Antony · ജോർജുകുട്ടി</h1>
 
 <p align="center">
-  <img src="out/idukki.png" alt="Idukki reservoir, water level shown by colour" width="100%">
-</p>
-
-<p align="center">
-  <img src="out/level-bar.svg" alt="Water level colour scale, pale (low) to deep blue (full)" width="100%">
+  <img src="out/idukki.png" alt="Idukki reservoir, water level shown by colour" width="100%"><br>
+  <img src="out/level-bar.svg" alt="Water level colour scale, low to full" width="100%">
 </p>
 
 <!--LEVEL:START-->
 Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · Water level: `2367.2 ft` / `2403 ft` (61.28%) · Last updated: 27/09/2026 11:00 AM
 <!--LEVEL:END-->
 
-<!--ALERTS:START-->
-Alert levels: 🔵 `2388.94 ft` · 🟠 `2394.94 ft` · 🔴 `2395.94 ft`
-<!--ALERTS:END-->
+<p align="center">
+  <img src="out/alerts.svg" alt="Alert levels" width="80%">
+</p>
 
 ---
 
