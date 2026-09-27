@@ -209,7 +209,7 @@ function updateReadme() {
   const stamp = [level.reportDate, level.reportTime].filter(Boolean).join(" ");
   const caption =
     `Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · ` +
-    `Water level: \`${level.level} ft\` / \`${level.frl} ft\` (${level.percent}%)${remarks} · ` +
+    `Water level: \`${level.level} ft\` / \`${level.frl} ft\` (${level.percent}% capacity)${remarks} · ` +
     `Last updated: ${stamp || "unknown"}`;
   readme = replaceBlock(readme, "LEVEL", caption);
 
