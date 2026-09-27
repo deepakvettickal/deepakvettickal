@@ -2,7 +2,7 @@ name: Rotate style
 
 on:
   schedule:
-    - cron: "5 * * * *" # hourly, a few minutes past the hour
+    - cron: "23 * * * *" # hourly; :23 is less contended than the top-of-hour rush
   workflow_dispatch:
 
 permissions:
