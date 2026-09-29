@@ -1,5 +1,5 @@
 <p align="center">
-  <!--POSTER:START--><img src="out/styles/brutalist.png" alt="Idukki reservoir, water level shown by colour" width="100%"><!--POSTER:END--><br>
+  <!--POSTER:START--><img src="out/styles/watercolor-lime.png" alt="Idukki reservoir, water level shown by colour" width="100%"><!--POSTER:END--><br>
   <img src="out/level-bar.svg" alt="Water level colour scale, low to full" width="100%">
 </p>
 
