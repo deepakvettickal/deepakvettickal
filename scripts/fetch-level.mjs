@@ -18,11 +18,19 @@ async function resolvePdfUrl() {
   const res = await fetch(LANDING, { headers: { "user-agent": "profile-readme/1.0" } });
   if (!res.ok) throw new Error(`landing ${res.status}`);
   const html = await res.text();
-  // Find the current KSEB PDF link (filename changes daily, e.g. KSEB-SITE-20.pdf).
-  // The link is usually relative (/wp-content/...); the first KSEB-SITE match is the latest.
-  const m = html.match(/(?:https?:\/\/[^"']*?|\/[^"']*?)KSEB-SITE-[^"']*?\.pdf/i);
-  if (!m) throw new Error("no KSEB PDF link found on landing page");
-  return new URL(m[0].replace(/&amp;/g, "&"), LANDING).href;
+  // Find the current KSEB PDF link. The filename varies over time (e.g. KSEB-SITE-20.pdf,
+  // KSEB-Site.pdf) and stale links to older months can linger on the page, so match any
+  // KSEB*.pdf and pick the one under the most recent /wp-content/uploads/YYYY/MM/ path.
+  const links = [...html.matchAll(/(?:https?:\/\/[^"']*?|\/[^"']*?)KSEB[^"']*?\.pdf/gi)].map(
+    (m) => m[0].replace(/&amp;/g, "&"),
+  );
+  if (!links.length) throw new Error("no KSEB PDF link found on landing page");
+  const monthOf = (u) => {
+    const d = u.match(/uploads\/(\d{4})\/(\d{2})\//);
+    return d ? Number(d[1]) * 12 + Number(d[2]) : 0;
+  };
+  const latest = links.reduce((a, b) => (monthOf(b) > monthOf(a) ? b : a));
+  return new URL(latest, LANDING).href;
 }
 
 async function downloadPdf(url) {
