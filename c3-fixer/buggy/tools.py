@@ -149,8 +149,9 @@ def triage_logs(question: str, top: int = 15) -> str:
     if not windows:
         return "no logs"
     scores = []
-    for b in range(0, len(windows), 60):                 # batch to stay inside Jev's 32k context
-        s = jev.score_many([w[1][:1200] for w in windows[b:b + 60]], question,
+    for b in range(0, len(windows), 60):
+        s = jev.score_many([w[1][:1200] for w in windows[b:b + 60]],
+                           f"How relevant is this log excerpt to: {question}",
                            ["unrelated", "background", "related", "smoking gun"])
         if s is None:
             return "jev unavailable; use grep on logs/ instead"
@@ -165,7 +166,8 @@ def rank_suspects(symptom: str) -> str:
     opts = [str(p.relative_to(WS)) for p in files]
     state = {"symptom": symptom[:4000],
              "files": {o: p.read_text(errors="replace")[:2500] for o, p in zip(opts, files)}}
-    probs = jev.choice(state, "Which source file most likely contains the bug behind the symptom?", opts)
+    probs = jev.choice(state, "Which source file most likely contains the bug behind the symptom?",
+                       {o: f"The bug is in {o}" for o in opts})
     if not probs:
         return "jev unavailable"
     return "\n".join(f"{p:.2f}  {f}" for f, p in sorted(probs.items(), key=lambda x: -x[1]))
@@ -173,9 +175,10 @@ def rank_suspects(symptom: str) -> str:
 
 def looks_like_bandaid(patch: str) -> float | None:
     """Jev: P(patch is a symptom-hiding hack rather than a root-cause fix)."""
-    return jev.noul({"patch": patch[:20000]},
-                    "Does this patch hide the symptom (sleeps, special-casing seeds or ids, swallowing "
-                    "exceptions, disabling or loosening a safety check) rather than fix a root cause?")
+    return jev.noul({"patch": patch[:20000]}, "Is this patch a band-aid rather than a root-cause fix?",
+                    yes="Hides the symptom: sleeps, special-cased seeds or ids, swallowed exceptions, "
+                        "or a disabled or loosened safety check.",
+                    no="Corrects the faulty logic so the system honours its contract.")
 
 
 ORIG = SCRATCH / "orig_src"
