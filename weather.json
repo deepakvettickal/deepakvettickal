@@ -1,0 +1,9 @@
+{
+  "tempC": 21.6,
+  "humidity": 91,
+  "precipitationMm": 0,
+  "code": 3,
+  "label": "Overcast",
+  "observedAt": "2026-10-03T17:15",
+  "fetchedAt": "2026-10-03T11:48:39.377Z"
+}

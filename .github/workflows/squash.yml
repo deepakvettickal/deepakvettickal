@@ -1,0 +1,35 @@
+name: Weekly history squash
+
+# The daily job re-renders and re-commits all rotation images every day, so git
+# history grows fast. Once a week, collapse history into a single commit and
+# force-push, discarding the accumulated old image blobs. The working tree is
+# preserved (current style images + archive + code + submodule pointer), so the
+# profile keeps working unchanged. The per-day archive/ images are kept as the record.
+
+on:
+  schedule:
+    - cron: "30 3 * * 0" # Sundays 03:30 UTC — clear of the daily 06:20 and hourly :05 runs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: squash
+
+jobs:
+  squash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - name: Collapse history into one commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan fresh
+          git add -A
+          git commit -m "Weekly squash (reset image history)"
+          git branch -M main
+          git push -f origin main
