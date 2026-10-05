@@ -1,9 +1,9 @@
 {
-  "tempC": 20.4,
-  "humidity": 98,
-  "precipitationMm": 0.3,
-  "code": 55,
-  "label": "Heavy drizzle",
-  "observedAt": "2026-10-04T18:00",
-  "fetchedAt": "2026-10-04T12:31:07.206Z"
+  "tempC": 20.2,
+  "humidity": 99,
+  "precipitationMm": 0,
+  "code": 3,
+  "label": "Overcast",
+  "observedAt": "2026-10-05T20:15",
+  "fetchedAt": "2026-10-05T14:54:49.939Z"
 }
