@@ -1,0 +1,31 @@
+name: Rotate style
+
+on:
+  schedule:
+    - cron: "23 * * * *" # hourly; :23 is less contended than the top-of-hour rush
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rotate
+  cancel-in-progress: true
+
+jobs:
+  rotate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # no submodules, no build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Point README at the style-of-the-hour
+        run: node scripts/rotate.mjs
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --cached --quiet || git commit -m "Rotate style"
+          git push
