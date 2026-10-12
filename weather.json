@@ -1,9 +1,9 @@
 {
-  "tempC": 20.8,
-  "humidity": 98,
+  "tempC": 20.6,
+  "humidity": 99,
   "precipitationMm": 0,
   "code": 2,
   "label": "Partly cloudy",
-  "observedAt": "2026-10-11T18:30",
-  "fetchedAt": "2026-10-11T13:03:49.760Z"
+  "observedAt": "2026-10-12T21:00",
+  "fetchedAt": "2026-10-12T15:41:40.336Z"
 }
