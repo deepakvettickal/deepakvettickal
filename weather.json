@@ -1,9 +1,9 @@
 {
-  "tempC": 20.5,
-  "humidity": 99,
-  "precipitationMm": 0.7,
-  "code": 81,
-  "label": "Showers",
-  "observedAt": "2026-10-15T17:00",
-  "fetchedAt": "2026-10-15T11:41:27.764Z"
+  "tempC": 20.8,
+  "humidity": 97,
+  "precipitationMm": 0.2,
+  "code": 53,
+  "label": "Drizzle",
+  "observedAt": "2026-10-16T17:00",
+  "fetchedAt": "2026-10-16T11:35:05.008Z"
 }
