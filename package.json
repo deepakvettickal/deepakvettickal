@@ -1,0 +1,12 @@
+{
+  "name": "profile-readme",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "fetch": "node scripts/fetch-level.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "yaml": "^2.5.0"
+  }
+}
