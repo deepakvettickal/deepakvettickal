@@ -1,9 +1,9 @@
 {
-  "tempC": 20.5,
-  "humidity": 100,
-  "precipitationMm": 0.3,
-  "code": 55,
-  "label": "Heavy drizzle",
-  "observedAt": "2026-10-22T17:30",
-  "fetchedAt": "2026-10-22T12:03:53.913Z"
+  "tempC": 20.3,
+  "humidity": 98,
+  "precipitationMm": 0.2,
+  "code": 53,
+  "label": "Drizzle",
+  "observedAt": "2026-10-23T17:15",
+  "fetchedAt": "2026-10-23T11:49:06.285Z"
 }
