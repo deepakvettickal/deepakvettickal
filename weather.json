@@ -1,9 +1,9 @@
 {
-  "tempC": 20.6,
-  "humidity": 98,
+  "tempC": 20.1,
+  "humidity": 92,
   "precipitationMm": 0,
   "code": 1,
   "label": "Mainly clear",
-  "observedAt": "2026-10-27T17:45",
-  "fetchedAt": "2026-10-27T12:25:59.070Z"
+  "observedAt": "2026-10-28T18:30",
+  "fetchedAt": "2026-10-28T13:11:05.887Z"
 }
