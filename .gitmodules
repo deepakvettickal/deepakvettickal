@@ -1,0 +1,3 @@
+[submodule "map-paper"]
+	path = map-paper
+	url = https://github.com/deepakvettickal/map-paper.git
