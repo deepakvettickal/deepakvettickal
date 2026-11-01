@@ -1,9 +1,9 @@
 {
-  "tempC": 21.6,
-  "humidity": 94,
+  "tempC": 20.6,
+  "humidity": 95,
   "precipitationMm": 0.1,
   "code": 51,
   "label": "Light drizzle",
-  "observedAt": "2026-10-31T18:15",
-  "fetchedAt": "2026-10-31T12:45:23.443Z"
+  "observedAt": "2026-11-01T19:00",
+  "fetchedAt": "2026-11-01T13:36:02.820Z"
 }
