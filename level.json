@@ -2,17 +2,17 @@
   "reservoir": "Idukki",
   "unit": "ft",
   "frl": 2403,
-  "level": 2368.76,
+  "level": 2368.86,
   "rule": 2399.79,
   "alerts": {
     "blue": 2391.79,
     "orange": 2397.79,
     "red": 2398.79
   },
-  "percent": 62.8,
+  "percent": 62.9,
   "remarks": null,
-  "reportDate": "04/11/2026",
+  "reportDate": "05/11/2026",
   "reportTime": "11:00 AM",
-  "fetchedAt": "2026-11-04T14:42:08.832Z",
-  "source": "https://sdma.kerala.gov.in/wp-content/uploads/2026/11/KSEB-SITE-3.pdf"
+  "fetchedAt": "2026-11-05T14:47:24.233Z",
+  "source": "https://sdma.kerala.gov.in/wp-content/uploads/2026/11/kseb-site-1.pdf"
 }
