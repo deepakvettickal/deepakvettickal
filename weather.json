@@ -1,9 +1,9 @@
 {
-  "tempC": 19.9,
-  "humidity": 99,
+  "tempC": 20.9,
+  "humidity": 100,
   "precipitationMm": 0,
   "code": 45,
   "label": "Fog",
-  "observedAt": "2026-11-12T20:45",
-  "fetchedAt": "2026-11-12T15:25:40.279Z"
+  "observedAt": "2026-11-13T20:00",
+  "fetchedAt": "2026-11-13T14:42:36.409Z"
 }
