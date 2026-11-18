@@ -1,10 +1,10 @@
 <p align="center">
-  <!--POSTER:START--><img src="out/styles/ordnance.png" alt="Idukki reservoir, water level shown by colour" width="100%"><!--POSTER:END--><br>
+  <!--POSTER:START--><img src="out/styles/watercolor-lime.png" alt="Idukki reservoir, water level shown by colour" width="100%"><!--POSTER:END--><br>
   <img src="out/level-bar.svg" alt="Water level colour scale, low to full" width="100%">
 </p>
 
 <!--LEVEL:START-->
-Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · Water level: `2369.28 ft` / `2403 ft` (63.31% capacity) · Last updated: 17/11/2026 11:00 AM
+Location: [Idukki reservoir](https://en.wikipedia.org/wiki/Idukki_Dam) · Water level: `2369.24 ft` / `2403 ft` (63.27% capacity) · Last updated: 18/11/2026 11:00 AM
 <!--LEVEL:END-->
 
 ---
