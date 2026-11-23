@@ -1,9 +1,9 @@
 {
-  "tempC": 22.4,
-  "humidity": 71,
+  "tempC": 20.1,
+  "humidity": 95,
   "precipitationMm": 0,
-  "code": 1,
-  "label": "Mainly clear",
-  "observedAt": "2026-11-22T20:00",
-  "fetchedAt": "2026-11-22T14:43:18.087Z"
+  "code": 0,
+  "label": "Clear sky",
+  "observedAt": "2026-11-23T23:45",
+  "fetchedAt": "2026-11-23T18:27:50.719Z"
 }
